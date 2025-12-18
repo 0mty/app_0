@@ -1,0 +1,32 @@
+// import React from "react";
+// import { SafeAreaView, StyleSheet } from "react-native";
+// import { NavigationContainer } from "@react-navigation/native";
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// import CategoryInterface from "./steam/interface/category_interface";
+// import EachInterface from "./steam/interface/each_interface";
+// import GameInterface from "./steam/interface/game_interface";
+
+// const Stack = createNativeStackNavigator();
+
+// const App = () => {
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       <NavigationContainer>
+//         <Stack.Navigator
+//           initialRouteName="Categories"
+//           screenOptions={{ headerShown: false }}
+//         >
+//           <Stack.Screen name="Categories" component={CategoryInterface} />
+//           <Stack.Screen name="Each" component={EachInterface} />
+//           <Stack.Screen name="Game" component={GameInterface} />
+//         </Stack.Navigator>
+//       </NavigationContainer>
+//     </SafeAreaView>
+//   );
+// };
+
+// export default App;
+
+// const styles = StyleSheet.create({
+//   container: { flex: 1, backgroundColor: "#071726" },
+// });

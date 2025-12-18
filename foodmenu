@@ -1,0 +1,57 @@
+// import { StatusBar } from "expo-status-bar";
+// import { StyleSheet } from "react-native";
+// import React, { useContext } from "react";
+
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// import { NavigationContainer } from "@react-navigation/native";
+
+// import CatergoriesScreen from "./components/Screen/CategoryScreen";
+// import MealsOverviewScreen from "./components/Screen/MealsOverviewScreen";
+// import MealDetail from "./components/MealDetail";
+// import Login from "./components/Screen/Login";
+
+// import { AuthProvider, AuthContext } from "./context/AuthContext";
+
+// const Stack = createNativeStackNavigator();
+
+// function AppInner() {
+//   const { user } = useContext(AuthContext);
+
+//   if (!user) {
+//     // show plain login screen (no navigation) until signed in
+//     return <Login />;
+//   }
+
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator
+//         initialRouteName="MealsCategories"
+//         screenOptions={{
+//           headerStyle: { backgroundColor: "#351401" },
+//           headerTintColor: "white",
+//         }}
+//       >
+//         <Stack.Screen name="MealsCategories" component={CatergoriesScreen} />
+//         <Stack.Screen name="MealsOverview" component={MealsOverviewScreen} />
+//         <Stack.Screen name="MealDetail" component={MealDetail} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+// export default function App() {
+//   return (
+//     <AuthProvider>
+//       <AppInner />
+//     </AuthProvider>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+// });
