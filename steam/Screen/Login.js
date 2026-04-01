@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
-import { SteamAuthContext } from "../AuthContext";
+import { SteamAuthContext } from "../scripts/AuthContext";
 
 export default function SteamLogin() {
   const { signIn, signUp } = useContext(SteamAuthContext);

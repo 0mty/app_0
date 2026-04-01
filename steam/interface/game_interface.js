@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Pressable,
   Dimensions,
 } from "react-native";
+import { fetchGameById } from "../utils/firestoreUtils.js";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
@@ -18,7 +19,6 @@ const formatPrice = (p) => {
 };
 
 const GameInterface = ({ route, navigation }) => {
-  // prefer passed game object; fallback: try loading from gamedata by id
   const {
     game: routeGame,
     gameId,
@@ -26,22 +26,23 @@ const GameInterface = ({ route, navigation }) => {
     fromCategory,
   } = route.params ?? {};
 
-  let game = routeGame ?? null;
+  const [game, setGame] = useState(routeGame ?? null);
+  const [loading, setLoading] = useState(!routeGame && gameId);
 
-  if (!game && gameId) {
-    try {
-      const mod = require("../data/gamedata.js");
-      const GAMES = mod?.GAMES ?? mod?.default?.GAMES ?? [];
-      game = Array.isArray(GAMES)
-        ? GAMES.find((g) => g?.id === gameId) ?? null
-        : null;
-    } catch (e) {
-      console.warn("failed to load GAMES for fallback:", e?.message ?? e);
+  useEffect(() => {
+    if (!routeGame && gameId) {
+      const loadGame = async () => {
+        const gameData = await fetchGameById(gameId);
+        setGame(gameData);
+        setLoading(false);
+      };
+      loadGame();
     }
-  }
+  }, [gameId, routeGame]);
 
   const title = game?.title ?? "Untitled";
   const imageUri =
+    game?.imageUrl ||
     game?.GameImage ||
     game?.image ||
     game?.cover ||
@@ -49,6 +50,32 @@ const GameInterface = ({ route, navigation }) => {
     null;
 
   const price = formatPrice(game?.price ?? game?.Price);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.headerBar}>
+          <View style={styles.headerRow}>
+            <Pressable
+              onPress={() =>
+                navigation.replace("Each", {
+                  categoryId: fromCategoryId,
+                  category: fromCategory,
+                })
+              }
+              style={styles.backButton}
+            >
+              <Text style={styles.backText}>←</Text>
+            </Pressable>
+            <Text style={styles.headerTitle}>Loading...</Text>
+          </View>
+        </View>
+        <View style={[styles.container, styles.centerContent]}>
+          <Text style={{ color: "#ccc" }}>Loading game details...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -139,7 +166,14 @@ const GameInterface = ({ route, navigation }) => {
 export default GameInterface;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#071726" }, // dark blue body
+  container: {
+    flex: 1,
+    backgroundColor: "#071726",
+  },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
+  }, // dark blue body
 
   headerBar: {
     backgroundColor: "#12324a", // brighter header navy

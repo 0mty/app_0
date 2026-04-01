@@ -5,7 +5,7 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { auth } from "./firebaseConfig";
+import { auth } from "./firebaseConfig.js";
 
 export const SteamAuthContext = createContext({
   user: null,

@@ -1,26 +1,43 @@
-// import React from "react";
+// import React, { useContext } from "react";
 // import { SafeAreaView, StyleSheet } from "react-native";
 // import { NavigationContainer } from "@react-navigation/native";
 // import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import CategoryInterface from "./steam/interface/category_interface";
 // import EachInterface from "./steam/interface/each_interface";
 // import GameInterface from "./steam/interface/game_interface";
+// import Login from "./steam/Screen/Login";
+// import { SteamAuthProvider, SteamAuthContext } from "./steam/AuthContext";
 
 // const Stack = createNativeStackNavigator();
+
+// const RootNavigator = () => {
+//   const { user, loading } = useContext(SteamAuthContext);
+
+//   if (loading) return null;
+
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator screenOptions={{ headerShown: false }}>
+//         {user ? (
+//           <>
+//             <Stack.Screen name="Categories" component={CategoryInterface} />
+//             <Stack.Screen name="Each" component={EachInterface} />
+//             <Stack.Screen name="Game" component={GameInterface} />
+//           </>
+//         ) : (
+//           <Stack.Screen name="Login" component={Login} />
+//         )}
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// };
 
 // const App = () => {
 //   return (
 //     <SafeAreaView style={styles.container}>
-//       <NavigationContainer>
-//         <Stack.Navigator
-//           initialRouteName="Categories"
-//           screenOptions={{ headerShown: false }}
-//         >
-//           <Stack.Screen name="Categories" component={CategoryInterface} />
-//           <Stack.Screen name="Each" component={EachInterface} />
-//           <Stack.Screen name="Game" component={GameInterface} />
-//         </Stack.Navigator>
-//       </NavigationContainer>
+//       <SteamAuthProvider>
+//         <RootNavigator />
+//       </SteamAuthProvider>
 //     </SafeAreaView>
 //   );
 // };

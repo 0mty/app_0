@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,18 +8,7 @@ import {
   Animated,
   Pressable,
 } from "react-native";
-
-// static require (Metro-friendly)
-let CATEGORIES = [];
-try {
-  const mod = require("../data/gamedata.js");
-  CATEGORIES = mod?.CATEGORIES ?? mod?.default?.CATEGORIES ?? [];
-} catch (err) {
-  console.warn(
-    "failed to load CATEGORIES in category_interface:",
-    err?.message ?? err
-  );
-}
+import { fetchCategories } from "../utils/firestoreUtils.js";
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
@@ -76,7 +65,8 @@ const CategoryCard = ({ item, onPress }) => {
   };
   const imageUri =
     (item &&
-      (item.cover ||
+      (item.imageUrl ||
+        item.cover ||
         item.image ||
         item.GameImage ||
         item.src ||
@@ -135,24 +125,40 @@ const CategoryCard = ({ item, onPress }) => {
 };
 
 const CategoryInterface = ({ navigation }) => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      setLoading(true);
+      const data = await fetchCategories();
+      setCategories(data);
+      setLoading(false);
+    };
+    loadCategories();
+  }, []);
+
   const openCategory = (category) => {
     navigation.replace("Each", { categoryId: category?.id, category });
   };
 
   return (
     <View style={styles.container}>
-      {}
       <View style={styles.headerBar}>
         <Text style={styles.header}>Categories</Text>
       </View>
 
-      {CATEGORIES.length === 0 ? (
+      {loading ? (
+        <View style={styles.center}>
+          <Text style={styles.info}>Loading categories...</Text>
+        </View>
+      ) : categories.length === 0 ? (
         <View style={styles.center}>
           <Text style={styles.info}>No categories to display</Text>
         </View>
       ) : (
         <FlatList
-          data={CATEGORIES}
+          data={categories}
           keyExtractor={(item, idx) => item?.id?.toString?.() ?? String(idx)}
           renderItem={({ item }) => (
             <CategoryCard item={item} onPress={openCategory} />
@@ -170,9 +176,8 @@ export default CategoryInterface;
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#071726" },
 
-
   headerBar: {
-    backgroundColor: "#12324a", 
+    backgroundColor: "#12324a",
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 12,
@@ -191,10 +196,10 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 10,
     overflow: "hidden",
-    backgroundColor: "#0b2a3a", 
+    backgroundColor: "#0b2a3a",
     elevation: 3,
   },
-  cover: { width: "100%", height: 140, backgroundColor: "#082033" }, 
+  cover: { width: "100%", height: 140, backgroundColor: "#082033" },
   placeholder: { alignItems: "center", justifyContent: "center" },
   placeholderText: { color: "#9fb7c9" },
 

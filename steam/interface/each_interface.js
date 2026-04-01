@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,20 +8,10 @@ import {
   Pressable,
   Animated,
 } from "react-native";
-
-// load gamedata (CATEGORIES and optional GAMES)
-let CATEGORIES = [];
-let GAMES = [];
-try {
-  const mod = require("../data/gamedata.js");
-  CATEGORIES = mod?.CATEGORIES ?? mod?.default?.CATEGORIES ?? [];
-  GAMES = mod?.GAMES ?? mod?.default?.GAMES ?? [];
-} catch (err) {
-  console.warn(
-    "failed to load gamedata in each_interface:",
-    err?.message ?? err
-  );
-}
+import {
+  fetchCategories,
+  fetchGamesByCategory,
+} from "../utils/firestoreUtils.js";
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
@@ -29,6 +19,7 @@ const AnimatedImage = Animated.createAnimatedComponent(Image);
 const GameItem = ({ game, navigation, fromCategory }) => {
   const title = game?.title ?? "Untitled";
   const imageUri =
+    game?.imageUrl ||
     game?.GameImage ||
     game?.image ||
     game?.GameImg ||
@@ -145,24 +136,35 @@ const GameItem = ({ game, navigation, fromCategory }) => {
 
 const EachInterface = ({ route, navigation }) => {
   const { categoryId, category } = route.params ?? {};
-  const categoryObj = category ??
-    CATEGORIES.find((c) => c?.id === categoryId) ?? {
-      id: categoryId,
-      name: "Category",
-    };
+  const [categoryObj, setCategoryObj] = useState(null);
+  const [filteredGames, setFilteredGames] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // filter games that include the categoryId in their categoryIds array
-  const filteredGames = Array.isArray(GAMES)
-    ? GAMES.filter(
-        (g) =>
-          Array.isArray(g?.categoryIds) &&
-          g.categoryIds.includes(categoryObj.id)
-      )
-    : [];
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const categories = await fetchCategories();
+        const categoryData = category ??
+          categories.find((c) => c?.id === categoryId) ?? {
+            id: categoryId,
+            title: "Category",
+          };
+        setCategoryObj(categoryData);
+
+        const games = await fetchGamesByCategory(categoryData.id);
+        setFilteredGames(games);
+      } catch (error) {
+        console.error("Error loading category data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [categoryId, category]);
 
   return (
     <View style={styles.container}>
-      {/* brighter header bar wrapping the row */}
       <View style={styles.headerBar}>
         <View style={styles.headerRow}>
           <Pressable
@@ -171,11 +173,15 @@ const EachInterface = ({ route, navigation }) => {
           >
             <Text style={styles.backText}>←</Text>
           </Pressable>
-          <Text style={styles.header}>{categoryObj?.name ?? "Category"}</Text>
+          <Text style={styles.header}>{categoryObj?.title ?? "Category"}</Text>
         </View>
       </View>
 
-      {filteredGames.length === 0 ? (
+      {loading ? (
+        <View style={styles.center}>
+          <Text style={{ color: "#ddd" }}>Loading games...</Text>
+        </View>
+      ) : filteredGames.length === 0 ? (
         <View style={styles.center}>
           <Text style={{ color: "#ddd" }}>No games for this category</Text>
         </View>

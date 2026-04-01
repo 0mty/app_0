@@ -6,7 +6,10 @@ import CategoryInterface from "./steam/interface/category_interface";
 import EachInterface from "./steam/interface/each_interface";
 import GameInterface from "./steam/interface/game_interface";
 import Login from "./steam/Screen/Login";
-import { SteamAuthProvider, SteamAuthContext } from "./steam/AuthContext";
+import {
+  SteamAuthProvider,
+  SteamAuthContext,
+} from "./steam/scripts/AuthContext";
 
 const Stack = createNativeStackNavigator();
 
